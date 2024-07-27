@@ -1,4 +1,4 @@
-package conexion;
+package zona_fit.conexion;
 
 import com.mysql.cj.jdbc.Driver;
 
