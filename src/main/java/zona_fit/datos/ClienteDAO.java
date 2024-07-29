@@ -89,6 +89,38 @@ public class ClienteDAO implements IClienteDAO{
         //CREAMOS LA QUERY
         //PONEMOS UN SIGNO ? YA QUE EN ESTE PODEMOS INYECYAR EL VALOR DEL ID QUE DESEEMOS BUSCAR
         String query = "SELECT * FROM cliente WHERE id = ?";
+
+        //AHORA VAMOS A EJECUTAR LA QUERY Y COMO ESTO PUEDE FALLAR PODEMOS USAR EL TRYCATCH
+        try {
+            //PREPARAMOS EL STATEMENT CON LA QUERY
+            ps = con.prepareStatement(query);
+
+            //PASAMOS EL PARAMETRO INYECTABLE DE LA QUERY, EN ESTE CASO EL ID
+            ps.setInt(1, cliente.getId());  //Cuando usamos parametros inyectables estos tienen una posicion de izquiera a derecha, y comienzan en 1
+            //En este caso solo hay un ?, por ende la posicion es 1, y luego indicamos que en esa posicion va a ir el id que se va a buscar
+            //el cual viene del objeto de tipo Cliente (SE CREO UN CONSTRUCTOR QUE SOLO RECIBE EL ID) que se introduce como parametro al metodo, y se extrae por medio de un getter
+            //EJECUTAMOS QUERY
+            rs = ps.executeQuery();
+
+            // VERIFICAMOS SI ENCONTRAMOS UN CLIENTE, MIRANDO SI HAY ALGO PARA ITERAR, Y PONIENDO LOS DATOS DEL USUARIO EN EL OBJETO DE CLIENTE QUE ENTRO
+            if (rs.next()){
+                //seteamos los datos
+                cliente.setName(rs.getString("nombre"));
+                cliente.setLastName(rs.getString("apellido"));
+                cliente.setMemership(rs.getInt("membresia"));
+                //devolvemos que true ya que si lo encontro
+                return true;
+            }
+        }catch (Exception e){
+            System.out.println("No se puede encontrar el cliente "+e.getMessage());
+        }
+        //CERRAMOS LA CONECCION EN EL TRYCATCH DEBIDO A QUE PUEDE FALLAR
+        try {
+            con.close();
+        }catch (Exception e){
+            System.out.println("Coneccion no se puede cerrar "+e.getMessage());
+        }
+        //DEVOLVEMOS FALSO SI NO LO ENCONTRO
         return false;
     }
 
@@ -107,7 +139,7 @@ public class ClienteDAO implements IClienteDAO{
         return false;
     }
 
-//    public static void main(String[] args) {
+public static void main(String[] args) {
 //        //LISTAR CLIENTES
 //        System.out.println("---listar cadena---");
 //        ClienteDAO clienteDAO = new ClienteDAO();
@@ -116,5 +148,24 @@ public class ClienteDAO implements IClienteDAO{
 //        for (Object iterator : clientes ){
 //            System.out.println(iterator);
 //        }
-//    }
+
+    //BUSCAR POR ID
+    System.out.println("--BUSCAR POR ID--");
+    //CREAMOS UN OBJETO DE TIPO CLIENTE QUE RECIBE SOLO ID POR MEDIO DEL CONSTRUCTOR DE SOLO ID
+    Cliente cliente = new Cliente(1);
+
+    //CREAMOS UN CLIENTE DAO PARA PODER ACCEDER A LOS METODOS
+    ClienteDAO clienteDAO = new ClienteDAO();
+
+    //PARA VER SU LO ENCONTRO PONEMOS UNA VARIABLE BOOLEANA
+    boolean encontrado = clienteDAO.buscarId(cliente); //ESTO ES DEBIDO A QUE EL METODO RETURNA VERDADERO O FALSO
+
+    //VERIFICAMOS SI DEVOLVIO O NO
+    if (encontrado){
+        System.out.println("Cliente encontrado: "+cliente); //CLIENTE TAMBIEN SE MODIFICA CON ESTE METODO, EL METODO SETEA LOS VALORES RECIBIDOS Y A SU VEZ DEVUELVE TRUE/FALSE
+    }else{
+        System.out.println("Cliente no encontrado "+cliente); //DEVUELVE SOLO EL ID YA QUE NO SE SETEAN VALORES EN EL METODO
+    }
+
+  }
 }
