@@ -172,13 +172,12 @@ public class ClienteDAO implements IClienteDAO{
 
         //CREAMOS LAS INSTANCIAS NECESARIAS
         PreparedStatement ps;
-        ResultSet rs;
 
         //CREAMOS LA CONEXION
         Connection con = Conexion.connection();
 
         //Creamos la query
-        String query = "UPDATE cliente SET nombre = ?, apellido = ?, membresia = ? WHERE id = ?";
+        String query = "UPDATE cliente SET nombre=?, apellido=?, membresia=? WHERE id = ?";
 
         //Preparamos el statement
         try {
@@ -196,7 +195,6 @@ public class ClienteDAO implements IClienteDAO{
             ps.execute();
             return true;
 
-
         }catch (Exception e){
             System.out.println("Error al actualizar el cliente "+e.getMessage());
 
@@ -210,7 +208,7 @@ public class ClienteDAO implements IClienteDAO{
             }
         }
 
-        return null;
+        return false;
     }
 
     @Override
@@ -309,7 +307,7 @@ public static void main(String[] args) {
     //ACTUALIZAR
 
     //CREAMOS EL CLIENTE QUE VAMOS A MODIFICAR CON EL CONTRUCTOR COMPLETO
-    Cliente cliente = new Cliente(4,"Marin",1,"Pacho");
+    Cliente cliente = new Cliente(3, 1,"perre","vergue");
 
     //CREAMOS AL CLIENTEDAO PARA ACCEDER A LOS METODOS
     ClienteDAO clienteDAO = new ClienteDAO();

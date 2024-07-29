@@ -21,17 +21,16 @@ public class Cliente {
         this.id = id;
     }
 
-    //CREAR REGISTRO(NO SE PONE ID YA QUE ESTE ES AUTOENERABLE)
+    // Constructor para crear un registro sin ID (ID es auto-generable)
     public Cliente(int memership, String lastName, String name) {
-        this.id = id;
         this.memership = memership;
         this.lastName = lastName;
         this.name = name;
     }
 
-    //COMPLETO(SOLO AÑADIMOS EL ID Y LLAMAMOS AL METODO QUE TENIA LOS OTROS ATRIBUTOS Y MELO)
-    public Cliente(int id, String lastName, int memership, String name) {
-        this(memership, name, lastName);//esto invoca al metodo con esos atributos
+    // Constructor completo (con ID)
+    public Cliente(int id, int memership, String name, String lastName) {
+        this(memership, lastName, name); // Aquí está el error: corrige el orden de los parámetros
         this.id = id;
     }
 
