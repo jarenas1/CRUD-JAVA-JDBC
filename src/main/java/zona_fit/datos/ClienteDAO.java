@@ -124,8 +124,46 @@ public class ClienteDAO implements IClienteDAO{
         return false;
     }
 
+
     @Override
     public boolean añadirCliente(Cliente cliente) {
+        //INICIAMOS LOS OBJETOS NECESARIOS
+        PreparedStatement ps;
+//        ResultSet rs; NO SE CREA YA QUE ESTAMOS MANDANDO Y NO TRAYENDO COSAS
+
+        //NOS CONECTAMOS
+        Connection con = Conexion.connection();
+
+        //CREAMOS LA QUERY
+        String query = "INSERT INTO cliente (nombre,apellido,membresia)VALUES(?,?,?)";
+
+        //PREPARAMOS EL STATEMENT
+        try {
+            ps = con.prepareStatement(query);
+
+            //SETEAMOS LOS VALORES INYECTABLES
+            ps.setString(1,cliente.getName()); // PRIMER ?, TOMA VALOR DE NOMBRE DEL OBJETO DADO COMO PARAMETRO
+            ps.setString(2,cliente.getLastName());
+            ps.setInt(3,cliente.getMemership());
+
+            //EJECUTAMOS
+//            rs = ps.execute(); EN ESTE CASO NO ASIGNAMOS NADA A RESULT SET YA QUE NO NECESITAMOS TRAER NADA DE LA QUERY
+            ps.execute(); //usamos el execute ya que el execute query nos sirve para traer
+
+            //RETORNAMOS VERDADERO SI PUDIMOS ENVIAR EL USUARIO
+            return true;
+        }catch (Exception e){
+            System.out.println("No se pudo añadir el cliente" + e.getMessage());
+        }
+
+        //CERRAMOS CONECCION
+        try {
+            con.close();
+        }catch (Exception e){
+            System.out.println("No se pudo cerrar la coneccion "+e.getMessage());
+        }
+
+        //SI NO PUDIMOS ENVIAR EL USUARIO VAMOR A RETORNAR FALSO
         return false;
     }
 
@@ -149,23 +187,47 @@ public static void main(String[] args) {
 //            System.out.println(iterator);
 //        }
 
-    //BUSCAR POR ID
-    System.out.println("--BUSCAR POR ID--");
-    //CREAMOS UN OBJETO DE TIPO CLIENTE QUE RECIBE SOLO ID POR MEDIO DEL CONSTRUCTOR DE SOLO ID
-    Cliente cliente = new Cliente(1);
+    //-----------------------------------------------------------------------------------------------------------------------------
 
-    //CREAMOS UN CLIENTE DAO PARA PODER ACCEDER A LOS METODOS
+
+//    //BUSCAR POR ID
+//    System.out.println("--BUSCAR POR ID--");
+//    //CREAMOS UN OBJETO DE TIPO CLIENTE QUE RECIBE SOLO ID POR MEDIO DEL CONSTRUCTOR DE SOLO ID
+//    Cliente cliente = new Cliente(1);
+//
+//    //CREAMOS UN CLIENTE DAO PARA PODER ACCEDER A LOS METODOS
+//    ClienteDAO clienteDAO = new ClienteDAO();
+//
+//    //PARA VER SU LO ENCONTRO PONEMOS UNA VARIABLE BOOLEANA
+//    boolean encontrado = clienteDAO.buscarId(cliente); //ESTO ES DEBIDO A QUE EL METODO RETURNA VERDADERO O FALSO
+//
+//    //VERIFICAMOS SI DEVOLVIO O NO
+//    if (encontrado){
+//        System.out.println("Cliente encontrado: "+cliente); //CLIENTE TAMBIEN SE MODIFICA CON ESTE METODO, EL METODO SETEA LOS VALORES RECIBIDOS Y A SU VEZ DEVUELVE TRUE/FALSE
+//    }else{
+//        System.out.println("Cliente no encontrado "+cliente); //DEVUELVE SOLO EL ID YA QUE NO SE SETEAN VALORES EN EL METODO
+//    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+
+    //INSERTAR CLIENTE
+
+    System.out.println("---INSERTAR CLIENTE---");
+
+    //CREAMOS UN CLIENTE
+    Cliente cliente = new Cliente(2,"Bros","Mario de jesus");
+
+    //CREAMOS UN DAO PARA ACCEDER AL METODO DE AÑADIR
     ClienteDAO clienteDAO = new ClienteDAO();
 
-    //PARA VER SU LO ENCONTRO PONEMOS UNA VARIABLE BOOLEANA
-    boolean encontrado = clienteDAO.buscarId(cliente); //ESTO ES DEBIDO A QUE EL METODO RETURNA VERDADERO O FALSO
+    //LLAMAMOS LA METODO
+    boolean añadido = clienteDAO.añadirCliente(cliente); //EL METODO DEVUELE TRUE SI SE AÑADE Y FALSE SI NO
 
-    //VERIFICAMOS SI DEVOLVIO O NO
-    if (encontrado){
-        System.out.println("Cliente encontrado: "+cliente); //CLIENTE TAMBIEN SE MODIFICA CON ESTE METODO, EL METODO SETEA LOS VALORES RECIBIDOS Y A SU VEZ DEVUELVE TRUE/FALSE
-    }else{
-        System.out.println("Cliente no encontrado "+cliente); //DEVUELVE SOLO EL ID YA QUE NO SE SETEAN VALORES EN EL METODO
+    //VERIFICAMOS SI SE AÑADIO O NO
+    if (añadido){
+        System.out.println("Cliente añadido");
+    }else {
+        System.out.println("No se pudo añadir ");
     }
-
   }
 }
