@@ -25,7 +25,7 @@ public class ClienteDAO implements IClienteDAO{
         //RECIBIMO LA INFORMACION DE LA CONSULTA QUE HEMOS REALIZADO POR MEDIO DE RESULTSET
         ResultSet rs;
 
-        //INICIAMOS LA CONECCION (creamos un objeto de tipo connection y le asignamos a este el valor que nos devuelva el metodo que creamos en a clase Conexion
+        //INICIAMOS LA CONEXION (creamos un objeto de tipo connection y le asignamos a este el valor que nos devuelva el metodo que creamos en a clase Conexion
         Connection con = Conexion.connection();
 
         //CREAMOS UNA VARIABLE QUE CONTENGA LA QUERY (order by id los ordena y ya)
@@ -169,11 +169,74 @@ public class ClienteDAO implements IClienteDAO{
 
     @Override
     public Boolean modificarCliente(Cliente cliente) {
+
+        //CREAMOS LAS INSTANCIAS NECESARIAS
+        PreparedStatement ps;
+        ResultSet rs;
+
+        //CREAMOS LA CONEXION
+        Connection con = Conexion.connection();
+
+        //Creamos la query
+        String query = "UPDATE cliente SET nombre = ?, apellido = ?, membresia = ? WHERE id = ?";
+
+        //Preparamos el statement
+        try {
+            ps = con.prepareStatement(query);
+
+            //AÑADIMOS LOS INYECTYABLES
+            ps.setString(1,cliente.getName()); //AÑADIMO A CADA ? DE LA QUERY LOS DATOS DEL CLIENTE QUE ENTRA COMO PARAMETRO
+            ps.setString(2,cliente.getLastName());
+            ps.setInt(3,cliente.getMemership());
+
+            //RECIBIMOS TAMBIEN EL ID A MODIFICAR DEL OBJETO DE TIPO CLIENTE INGRESADO
+            ps.setInt(4,cliente.getId());
+
+            //EJECUTAMOS LA QUERY Y DEVOLVEMOS TRUE SI TODO FUNCIONA
+            ps.execute();
+            return true;
+
+
+        }catch (Exception e){
+            System.out.println("Error al actualizar el cliente "+e.getMessage());
+
+        }// VAMOS A USAR EL FINALLY, EL CUAL NOS PERMITE EJECUTAR UNA SENTENCIA PASE O NO POR EL CATCH:
+        finally {
+            //CERRAMOS CONECCION
+            try {
+                con.close();
+            }catch (Exception e){
+                System.out.println("No se ha podido cerrar la coneccion "+e.getMessage());
+            }
+        }
+
         return null;
     }
 
     @Override
     public boolean eliminarCliente(Cliente cliente) {
+        //CREAMOS CONECCION Y OTROS
+        PreparedStatement ps;
+        Connection con = Conexion.connection();
+        String query = "DELETE FROM cliente WHERE id = ?";
+
+        //EJECUCION DE QUERY
+        try {
+            //PREPARAMOS EL STATEMENT
+            ps = con.prepareStatement(query);
+            //INYECTAMOS LA QUERY EN LA POSICION 1
+            ps.setInt(1,cliente.getId());
+            ps.execute();
+            return true;
+        }catch (Exception e){
+            System.out.println("No se pudo eliminar el usuario "+e.getMessage());
+        }
+        //CERRAMOS CONECCION
+        try {
+            con.close();
+        }catch (Exception e){
+            System.out.println("No se pudo cerrar la coneccion "+e.getMessage());
+        }
         return false;
     }
 
@@ -210,24 +273,53 @@ public static void main(String[] args) {
 
     //----------------------------------------------------------------------------------------------------------------------------------
 
-    //INSERTAR CLIENTE
+//    //INSERTAR CLIENTE
+//
+//    System.out.println("---INSERTAR CLIENTE---");
+//
+//    //CREAMOS UN CLIENTE
+//    Cliente cliente = new Cliente(2,"Bros","Mario de jesus");
+//
+//    //CREAMOS UN DAO PARA ACCEDER AL METODO DE AÑADIR
+//    ClienteDAO clienteDAO = new ClienteDAO();
+//
+//    //LLAMAMOS LA METODO
+//    boolean añadido = clienteDAO.añadirCliente(cliente); //EL METODO DEVUELE TRUE SI SE AÑADE Y FALSE SI NO
+//
+//    //VERIFICAMOS SI SE AÑADIO O NO
+//    if (añadido){
+//        System.out.println("Cliente añadido");
+//    }else {
+//        System.out.println("No se pudo añadir ");
+//    }
 
-    System.out.println("---INSERTAR CLIENTE---");
+    //BORAR
+//    System.out.println("BORRAR");
+//
+//    //CREAMOS UN CLIENTE
+//    Cliente cliente = new Cliente(2);
+//
+//    //CREAMOS UN DAO PARA ACCEDER AL METODO DE AÑADIR
+//    ClienteDAO clienteDAO = new ClienteDAO();
+//
+//    boolean borrado = clienteDAO.eliminarCliente(cliente);
+//    System.out.println(borrado);
 
-    //CREAMOS UN CLIENTE
-    Cliente cliente = new Cliente(2,"Bros","Mario de jesus");
 
-    //CREAMOS UN DAO PARA ACCEDER AL METODO DE AÑADIR
+    //ACTUALIZAR
+
+    //CREAMOS EL CLIENTE QUE VAMOS A MODIFICAR CON EL CONTRUCTOR COMPLETO
+    Cliente cliente = new Cliente(4,"Marin",1,"Pacho");
+
+    //CREAMOS AL CLIENTEDAO PARA ACCEDER A LOS METODOS
     ClienteDAO clienteDAO = new ClienteDAO();
 
-    //LLAMAMOS LA METODO
-    boolean añadido = clienteDAO.añadirCliente(cliente); //EL METODO DEVUELE TRUE SI SE AÑADE Y FALSE SI NO
-
-    //VERIFICAMOS SI SE AÑADIO O NO
-    if (añadido){
-        System.out.println("Cliente añadido");
-    }else {
-        System.out.println("No se pudo añadir ");
+    //CREAMOS EL BOOLEANO QUE ACTUALIZA O NO
+    boolean actualizado = clienteDAO.modificarCliente(cliente);
+    if (actualizado){
+        System.out.println("Actualizado con exito");
+    }else{
+        System.out.println("No se pudo axtualizar");
     }
   }
 }
