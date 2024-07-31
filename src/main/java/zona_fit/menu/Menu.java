@@ -66,7 +66,32 @@ public class Menu extends ClienteDAO {
                 boolean creado = clienteDAO.añadirCliente(cliente);
                 System.out.println(cliente);
             } else if (op == 5) {
-                
+                System.out.println("---Actualizar---");
+                System.out.println("Ingrese el id del usuario que desea modificar");
+                int id = sc.nextInt();
+                sc.nextLine();
+                System.out.println("Ingrese el nuevo nombre");
+                String name = sc.nextLine();
+                System.out.println("Ingrese el apellido nuevo");
+                String lastName = sc.nextLine();
+                System.out.println("Ingrese la membresia");
+                int membership = sc.nextInt();
+                sc.nextLine();
+
+                //CREAMOS EL USUARIO PARA PASARLO AL METODO
+                Cliente cliente = new Cliente(id,membership,name,lastName);
+                boolean actualizado = clienteDAO.modificarCliente(cliente);
+
+                if (actualizado) {
+                    System.out.println("Usuario actualizado con exito");
+                }else{
+                    System.out.println("No se pudo actualizar el usuario");
+                }
+            } else if (op == 6) {
+                System.out.println("Saliendo...");
+                menu = false;
+            }else{
+                System.out.println("Ingrese una opcion valida");
             }
         }
     }
